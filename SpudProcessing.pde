@@ -1,50 +1,48 @@
-import controlP5.*;
 import processing.net.*;
 
 Client myClient;
-ControlP5 cp5;
 
 int arduino_port = 5200;
-String arduino_ip = "192.168.43.124";
+String arduino_ip = "192.168.4.1";
 
 int leftMotorSpeed = 0;
 int rightMotorSpeed = 0;
 int obstacleDistance = 0;
 
+boolean prevState = false;
+
 void setup() {
-  size(500,500);
+  fullScreen();
   setupClient();
-  cp5 = new ControlP5(this);
-
-  cp5.addTextfield("Left Motor")
-     .setPosition(20, 40)
-     .setSize(100, 20)
-     .setAutoClear(false);
-
-  cp5.addTextfield("Right Motor")
-     .setPosition(20, 80)
-     .setSize(100, 20)
-     .setAutoClear(false);
-
-  cp5.addTextfield("Obstacle Distance")
-     .setPosition(20, 120)
-     .setSize(100, 20)
-     .setAutoClear(false);
-     
-  cp5.addButton("startStopButton")
-     .setPosition(300, 40)
-     .setSize(150, 50)
-     .setLabel("Start / Stop"); 
 }
 
 void draw() {
-  background(100); 
+  isButtonPressed();
+  background(#FF6D00);
+  updateSensorData();
 
-  updateSensorData(); 
-  cp5.get(Textfield.class, "Left Motor").setValue(String.valueOf(leftMotorSpeed));
-  cp5.get(Textfield.class, "Right Motor").setValue(String.valueOf(rightMotorSpeed));
-  cp5.get(Textfield.class, "Obstacle Distance").setValue(String.valueOf(obstacleDistance));
-  delay(1000);
+  float textScale = min(width, height) / 500.0f; // Scale based on smaller dimension
+  textSize(40 * textScale);
+
+  textAlign(CENTER, CENTER);
+  rectMode(CENTER);
+  fill(#D84315);
+  rect(width/2, 0, width, height/6);
+  rect(width/2, height/6, width, height/150);
+  rect(width/2, height/3.5, width, height/150);
+  if (!isButtonPressed()) {
+    rect(width/2, height * 0.8, width/2, height/8);
+  } else {
+    fill(#FF5722);
+    rect(width/2, height * 0.8, width/2, height/8);
+  }
+  fill(255);
+  text("Start / Stop",  width/2, height * 0.8);
+  text("SpudArduino", width/2, height/25);
+  textSize(30 * textScale);
+  text("Left Motor Speed: " + leftMotorSpeed, width/2, height/5);
+  text("Right Motor Speed: " + rightMotorSpeed, width/2, height/4);
+  text("Obstacle Distance: " + obstacleDistance, width/2, height/8);
 }
 
 void setupClient() {
@@ -53,29 +51,35 @@ void setupClient() {
 
 void updateSensorData() {
   if (myClient.available() > 0) {
-    String data = readClient();
-
-    // Assuming Arduino sends data in format like "L:120,R:200,D:75" 
+    String data = myClient.readString();
     String[] values = data.split(","); 
-
-    for (String valuePair : values) {
-      String[] parts = valuePair.split(":");
-      if (parts[0].equals("L")) {
-        leftMotorSpeed = Integer.parseInt(parts[1]);
-      } else if (parts[0].equals("R")) {
-        rightMotorSpeed = Integer.parseInt(parts[1]);
-      } else if (parts[0].equals("D")) {
-        obstacleDistance = Integer.parseInt(parts[1]);
-      }
+    if (values.length >= 3) {
+      String[] ls = values[0].split(":");
+      String[] rs = values[1].split(":");
+      String[] d = values[2].split(":");
+      leftMotorSpeed = int(ls[1]);
+      rightMotorSpeed = int(rs[1]);
+      obstacleDistance = int(d[1].trim());
     }
+    
+    // println("Left Motor Speed: " + leftMotorSpeed);
+    // println("Right Motor Speed: " + rightMotorSpeed);
+    // println("Obstacle Distance: " + obstacleDistance);
   }
 }
 
-void startStopButton() {
-  print("Start / Stop button pressed!");
-}
-
-String readClient() {
-  String data = myClient.readString();
-  return data;
+boolean isButtonPressed() {
+  if (mouseX > ((width/2) - (width/4)) && mouseX <  ((width/2) + (width/4)) && mouseY > ((height * 0.8) - (height/8)/2) && mouseY < ((height * 0.8) + (height/8)/2) && mousePressed) {
+    if (prevState != true) {
+      println("hehe button pressed");
+      myClient.write("button");
+      prevState = true;
+    }
+    return true;
+  } else {
+    if (prevState == true) {
+      prevState = false;
+    }
+    return false;
+  }
 }
