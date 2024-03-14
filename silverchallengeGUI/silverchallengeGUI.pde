@@ -5,7 +5,6 @@ ControlP5 cp5;
 Toggle startStopToggle;
 Slider speedslider;
 Client myClient;
-Button confirm;
 Button Switch;
 
 int leftMotorSpeed = 0;
@@ -13,7 +12,7 @@ int rightMotorSpeed = 0;
 int distanceTravelled = 0;
 int obstacleDistance = 0;
 float sspeed=0.0;
-float prevspeed=0.0;
+float manualspeed=0.0;
 
 float currentSpeed = 0.0;
 float referenceSpeed = (leftMotorSpeed+rightMotorSpeed)/2;
@@ -50,13 +49,6 @@ void setup() {
     .setRange(0, 160)
     .setValue(0);
 
-  confirm= cp5.addButton("ConfirmButton")
-    .setPosition(300, height / 2 + 255)
-    .setSize(100, 40)
-    .setLabel("Confirm")
-    .setColorBackground(color(0, 255, 0))
-    .setValue(0);
-
   // Switch Button
   Switch= cp5.addButton("SwitchButton")
     .setPosition(width/2-65, height / 2 + 150)
@@ -65,17 +57,6 @@ void setup() {
     .setColorBackground(color(0, 0, 255))
     .setValue(0);
 }
-
-//void controlEventofonoff(ControlEvent theEvent) {
-//  if (theEvent.isFrom(startStopToggle)) {
-//    send = (int) startStopToggle.getValue() == 1 ? "1" : "0"; // Convert value to int
-//    println("there's a change in button: " + send);
-//    if (send == "1")
-//      startStopToggle.setLabel("Start");
-//    else
-//      startStopToggle.setLabel("Stop");
-//  }
-//}
 
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(startStopToggle)) {
@@ -89,13 +70,19 @@ void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(Switch)) {
     if (mode.equals("U")) {
       mode = "R"; // Switch to reference mode
-      lockManualControls(true); // Lock manual controls
+      lockManualControls(true);// Lock manual controls
+      manualspeed= sspeed;
     } else {
       mode = "U"; // Switch to manual mode
       lockManualControls(false);
-      sspeed= prevspeed;// Unlock manual controls
+      sspeed= manualspeed;// Unlock manual controls
     }
   }
+  if (theEvent.isFrom(speedslider))
+  {
+    sspeed= speedslider.getValue();
+  }
+    
 }
 
 void setupClient() {
@@ -103,21 +90,6 @@ void setupClient() {
 }
 
 
-void controlEventofSlider(ControlEvent theSpeed)
-{
-  if (theSpeed.isFrom(confirm))
-  {
-    check= confirm.getValue()==1? "1": "0";
-    if (check=="1")
-    {
-      sspeed= speedslider.getValue();
-      prevspeed= sspeed;
-    } else
-    {
-      sspeed= prevspeed;
-    }
-  }
-}
 
 
 void draw() {
@@ -183,7 +155,6 @@ void draw() {
 
 void lockManualControls(boolean lock) {
   speedslider.setLock(lock);
-  confirm.setLock(lock);
   sspeed= 0.0;
 }
 
