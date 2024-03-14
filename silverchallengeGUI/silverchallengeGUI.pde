@@ -27,6 +27,7 @@ boolean manualControl = true;
 
 void setup() {
   size(1500, 750);
+  background(#B8E6FA);
   cp5 = new ControlP5(this);
   //setupClient();
 
@@ -93,7 +94,7 @@ void setupClient() {
 
 
 void draw() {
-  background(255);
+ background(#B8E6FA);
   //updateSensorData();
   String sentence= answers(send, sspeed);
   println(sentence);
@@ -146,10 +147,15 @@ void draw() {
   text("CURRENT SPEED: " +  currentSpeed, 350, height/2+ 220);
   text("CURRENT REFERENCE SPEED:  " + referenceSpeed, width- 350, height/2+200);
   text("DISTANCE OF OBJECT: "+ obstacleDistance + " cm", width-350, height/2+240);
-
+  
+  textSize(20);
+  text("MIN", 60, height/2 +170);
+  text("MAX", 630, height/2 +170);
+  text("0", 60, height/2+190);
+   text("160", 630, height/2+190);
 
   // Draw line in the middle
-  stroke(0);
+  stroke(5);
   line(0, height / 2, width, height / 2);
 }
 
@@ -190,6 +196,11 @@ void ConfirmButton(int theValue) {
   //println("Confirm Button Pressed");
   
 }
+
+//void SwitchButton(int theValue) {
+//  // Switch button logic here
+// // println("Switch Button Pressed");
+//}
 
 void SliderValue(float theValue) {
   // Slider value logic here
