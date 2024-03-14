@@ -191,11 +191,6 @@ void ConfirmButton(int theValue) {
   
 }
 
-void SwitchButton(int theValue) {
-  // Switch button logic here
-  println("Switch Button Pressed");
-}
-
 void SliderValue(float theValue) {
   // Slider value logic here
   currentSpeed = theValue;
