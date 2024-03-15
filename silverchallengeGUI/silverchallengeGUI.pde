@@ -81,10 +81,20 @@ void controlEvent(ControlEvent theEvent) {
       lockManualControls(false);
       sspeed= manualspeed;// Unlock manual controls
     }
+    send = startStopToggle.getValue() == 1 ? "1" : "0";
+      String stringSpeed = Float.toString(sspeed);
+  String sentence= answers(send, stringSpeed);
+  println(sentence);
+   myClient.write(sentence);
   }
   if (theEvent.isFrom(speedslider))
   {
     sspeed= speedslider.getValue();
+    send = startStopToggle.getValue() == 1 ? "1" : "0";
+      String stringSpeed = Float.toString(sspeed);
+  String sentence= answers(send, stringSpeed);
+  println(sentence);
+   myClient.write(sentence);
   }
     
 }
@@ -185,7 +195,7 @@ void updateSensorData() {
 
 String answers(String send, String sspeed)
 {
-  String sentence= "B:" + send + ",M:"+ mode+ ",S:" + "100" ;
+  String sentence= "B:" + send + ",M:"+ mode+ ",S:" + sspeed ;
   return sentence;
 }
 
