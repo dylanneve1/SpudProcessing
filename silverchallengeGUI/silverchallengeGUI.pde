@@ -12,7 +12,7 @@ int rightMotorSpeed = 0;
 int distanceTravelled = 0;
 int obstacleDistance = 0;
 float sspeed=0.0;
-float manualspeed=0.0;
+int manualspeed=0;
 
 float currentSpeed = 0.0;
 float referenceSpeed = (leftMotorSpeed+rightMotorSpeed)/2;
@@ -21,7 +21,7 @@ int arduino_port = 5200;
 String arduino_ip = "192.168.4.1";
 String send = "0";  // Initial value
 String check= "0";
-String mode= "U";
+String mode= "0";
 
 boolean manualControl = true;
 
@@ -29,7 +29,7 @@ void setup() {
   size(1500, 750);
   background(#B8E6FA);
   cp5 = new ControlP5(this);
-  //setupClient();
+  setupClient();
 
   // Start/Stop Button
   startStopToggle = cp5.addToggle("")
@@ -62,19 +62,22 @@ void setup() {
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(startStopToggle)) {
     send = startStopToggle.getValue() == 1 ? "1" : "0";
-    //myClient.write(send);
+      String stringSpeed = Float.toString(sspeed);
+  String sentence= answers(send, stringSpeed);
+  println(sentence);
+  myClient.write(sentence);
     if (send == "1")
       startStopToggle.setLabel("Start");
     else
       startStopToggle.setLabel("Stop");
   }
   if (theEvent.isFrom(Switch)) {
-    if (mode.equals("U")) {
-      mode = "R"; // Switch to reference mode
+    if (mode.equals("0")) {
+      mode = "4"; // Switch to reference mode
       lockManualControls(true);// Lock manual controls
-      manualspeed= sspeed;
+      manualspeed= (int)sspeed;
     } else {
-      mode = "U"; // Switch to manual mode
+      mode = "0"; // Switch to manual mode
       lockManualControls(false);
       sspeed= manualspeed;// Unlock manual controls
     }
@@ -90,15 +93,14 @@ void setupClient() {
   myClient = new Client(this, arduino_ip, arduino_port);
 }
 
-
-
-
 void draw() {
  background(#B8E6FA);
-  //updateSensorData();
-  String sentence= answers(send, sspeed);
-  println(sentence);
+  updateSensorData();
+  //String stringSpeed = Float.toString(sspeed);
+  //String sentence= answers(send, stringSpeed);
+  //println(sentence);
   //myClient.write(sentence);
+  //myClient.clear();
 
   fill(0);
   textSize(80);
@@ -181,9 +183,9 @@ void updateSensorData() {
   }
 }
 
-String answers(String send, float sspeed)
+String answers(String send, String sspeed)
 {
-  String sentence= "B:" + send + ",M:"+ mode+ ",S:" + sspeed ;
+  String sentence= "B:" + send + ",M:"+ mode+ ",S:" + "100" ;
   return sentence;
 }
 
