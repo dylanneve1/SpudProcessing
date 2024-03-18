@@ -6,6 +6,7 @@ Toggle startStopToggle;
 Slider speedslider;
 Client myClient;
 Button Switch;
+Button confirm;
 
 int leftMotorSpeed = 0;
 int rightMotorSpeed = 0;
@@ -29,7 +30,7 @@ void setup() {
   size(1500, 750);
   background(#B8E6FA);
   cp5 = new ControlP5(this);
-  setupClient();
+  // setupClient();
 
   // Start/Stop Button
   startStopToggle = cp5.addToggle("")
@@ -37,8 +38,8 @@ void setup() {
     .setSize(400, 200)
     .setLabel("Start")
     .setColorBackground(color(150));
-  
- 
+
+
   // Manual Control
   cp5.addTextlabel("ManualLabel")
     .setPosition(80, height / 2 + 30)
@@ -47,12 +48,21 @@ void setup() {
   speedslider= cp5.addSlider("SliderValue")
     .setPosition(100, height / 2 + 170)
     .setSize(500, 20)
-    .setRange(0, 160)
+    .setRange(0, 100)
     .setValue(0);
+
+  // Confirm Button
+  cp5.addButton("ConfirmButton")
+    .setPosition(300, height / 2 + 255)
+    .setSize(100, 40)
+    .setLabel("Confirm")
+    .setColorBackground(color(0, 255, 0))
+    .setValue(0);
+
 
   // Switch Button
   Switch= cp5.addButton("SwitchButton")
-    .setPosition(width/2-65, height / 2 + 150)
+    .setPosition(width/2-75, height / 2 + 150)
     .setSize(150, 80)
     .setLabel("Switch Mode")
     .setColorBackground(color(0, 0, 255))
@@ -62,15 +72,22 @@ void setup() {
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(startStopToggle)) {
     send = startStopToggle.getValue() == 1 ? "1" : "0";
-      String stringSpeed = Float.toString(sspeed);
-  String sentence= answers(send, stringSpeed);
-  println(sentence);
-  myClient.write(sentence);
+    String stringSpeed = Float.toString(sspeed);
+    String[] input = stringSpeed.split(".");
+    if (input.length == 1) {
+
+      String inputSpeed= input[0];
+      String sentence = answers(send, inputSpeed);
+      println(sentence);
+      //myClient.write(sentence);
+    }
     if (send == "1")
       startStopToggle.setLabel("Start");
     else
       startStopToggle.setLabel("Stop");
   }
+
+  //if (send=="1"){
   if (theEvent.isFrom(Switch)) {
     if (mode.equals("0")) {
       mode = "4"; // Switch to reference mode
@@ -82,30 +99,65 @@ void controlEvent(ControlEvent theEvent) {
       sspeed= manualspeed;// Unlock manual controls
     }
     send = startStopToggle.getValue() == 1 ? "1" : "0";
-      String stringSpeed = Float.toString(sspeed);
-  String sentence= answers(send, stringSpeed);
-  println(sentence);
-   myClient.write(sentence);
+    String stringSpeed = Float.toString(sspeed);
+    String[] input = stringSpeed.split(".");
+    if (input.length == 1) {
+
+      String inputSpeed= input[0];
+      String sentence = answers(send, inputSpeed);
+      println(sentence);
+      //myClient.write(sentence);
+    }
   }
-  if (theEvent.isFrom(speedslider))
-  {
-    sspeed= speedslider.getValue();
+
+
+  if (theEvent.isFrom(speedslider)) {
+    // Speed slider value changed
+    currentSpeed = speedslider.getValue();
+  }
+  if (theEvent.isFrom("ConfirmButton")) {
+    // Confirm button pressed, update sspeed
+    sspeed = currentSpeed;
+    currentSpeed = speedslider.getValue();
     send = startStopToggle.getValue() == 1 ? "1" : "0";
-      String stringSpeed = Float.toString(sspeed);
-  String sentence= answers(send, stringSpeed);
-  println(sentence);
-   myClient.write(sentence);
+    String stringSpeed = Float.to(sspeed);
+      for (int i=0; i< length.stringSpeed; i++)
+    {char a= stringSpeed[i];
+       if (a== '.')
+    { input= stringSpeed(0,i);
+     String sentence = answers(send, input);
+      println(sentence);
+    }
+    String[] input = stringSpeed.split(".");
+    if (input.length == 1) {
+
+      String inputSpeed= input[0];
+     
+      //myClient.write(sentence);
+    }
   }
-    
 }
+// }
+//else
+//{
+//  send = startStopToggle.getValue() == 1 ? "1" : "0";
+//  String stringSpeed = "0.0";
+//  String sentence = answers(send, stringSpeed);
+//  println(sentence);
+//}
+
+
+
+
+
 
 void setupClient() {
   myClient = new Client(this, arduino_ip, arduino_port);
 }
 
 void draw() {
- background(#B8E6FA);
-  updateSensorData();
+  background(#B8E6FA);
+  // updateSensorData();
   //String stringSpeed = Float.toString(sspeed);
   //String sentence= answers(send, stringSpeed);
   //println(sentence);
@@ -159,16 +211,17 @@ void draw() {
   text("CURRENT SPEED: " +  currentSpeed, 350, height/2+ 220);
   text("CURRENT REFERENCE SPEED:  " + referenceSpeed, width- 350, height/2+200);
   text("DISTANCE OF OBJECT: "+ obstacleDistance + " cm", width-350, height/2+240);
-  
+
   textSize(20);
   text("MIN", 60, height/2 +170);
   text("MAX", 630, height/2 +170);
   text("0", 60, height/2+190);
-   text("160", 630, height/2+190);
+  text("100 ", 630, height/2+190);
 
   // Draw line in the middle
   stroke(5);
   line(0, height / 2, width, height / 2);
+  line(width/2, height/2+60, width/2, height);
 }
 
 void lockManualControls(boolean lock) {
@@ -195,7 +248,7 @@ void updateSensorData() {
 
 String answers(String send, String sspeed)
 {
-  String sentence= "B:" + send + ",M:"+ mode+ ",S:" + sspeed ;
+  String sentence= "B:" + send + ",M:"+ "4"+ ",S:" + sspeed ;
   return sentence;
 }
 
@@ -206,7 +259,6 @@ void ConfirmButton(int theValue) {
   // Confirm button logic here
   sspeed = currentSpeed;
   //println("Confirm Button Pressed");
-  
 }
 
 //void SwitchButton(int theValue) {
