@@ -72,15 +72,9 @@ void setup() {
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.isFrom(startStopToggle)) {
     send = startStopToggle.getValue() == 1 ? "1" : "0";
-    String stringSpeed = Float.toString(sspeed);
-    String[] input = stringSpeed.split(".");
-    if (input.length == 1) {
-
-      String inputSpeed= input[0];
-      String sentence = answers(send, inputSpeed);
-      println(sentence);
-      //myClient.write(sentence);
-    }
+    int stringSpeed = (int) sspeed;
+    String sentence = answers(send, stringSpeed);
+    println(sentence);
     if (send == "1")
       startStopToggle.setLabel("Start");
     else
@@ -99,15 +93,9 @@ void controlEvent(ControlEvent theEvent) {
       sspeed= manualspeed;// Unlock manual controls
     }
     send = startStopToggle.getValue() == 1 ? "1" : "0";
-    String stringSpeed = Float.toString(sspeed);
-    String[] input = stringSpeed.split(".");
-    if (input.length == 1) {
-
-      String inputSpeed= input[0];
-      String sentence = answers(send, inputSpeed);
-      println(sentence);
-      //myClient.write(sentence);
-    }
+    int stringSpeed = (int) sspeed;
+    String sentence = answers(send, stringSpeed);
+    println(sentence);
   }
 
 
@@ -120,21 +108,9 @@ void controlEvent(ControlEvent theEvent) {
     sspeed = currentSpeed;
     currentSpeed = speedslider.getValue();
     send = startStopToggle.getValue() == 1 ? "1" : "0";
-    String stringSpeed = Float.to(sspeed);
-      for (int i=0; i< length.stringSpeed; i++)
-    {char a= stringSpeed[i];
-       if (a== '.')
-    { input= stringSpeed(0,i);
-     String sentence = answers(send, input);
-      println(sentence);
-    }
-    String[] input = stringSpeed.split(".");
-    if (input.length == 1) {
-
-      String inputSpeed= input[0];
-     
-      //myClient.write(sentence);
-    }
+    int stringSpeed = (int) sspeed;
+    String sentence = answers(send, stringSpeed);
+    println(sentence);
   }
 }
 // }
@@ -246,7 +222,7 @@ void updateSensorData() {
   }
 }
 
-String answers(String send, String sspeed)
+String answers(String send, int sspeed)
 {
   String sentence= "B:" + send + ",M:"+ "4"+ ",S:" + sspeed ;
   return sentence;
