@@ -16,7 +16,7 @@ float sspeed=0.0;
 int manualspeed=0;
 
 float currentSpeed = 0.0;
-float referenceSpeed = (leftMotorSpeed+rightMotorSpeed)/2;
+float referenceSpeed = 0.0;
 float distanceOfObject = 0.0;
 int arduino_port = 5200;
 String arduino_ip = "192.168.4.1";
@@ -213,15 +213,17 @@ void updateSensorData() {
   if (myClient.available() > 0) {
     String data = myClient.readString();
     String[] values = data.split(",");
-    if (values.length >= 4) {
+    if (values.length >= 5) {
       String[] ls = values[0].split(":");
       String[] rs = values[1].split(":");
       String[] d = values[2].split(":");
       String[] t = values[3].split(":");
+      String [] s = values[4].split(":");
       leftMotorSpeed = int(ls[1]);
       rightMotorSpeed = int(rs[1]);
       obstacleDistance = int(d[1]);
-      distanceTravelled = int(t[1].trim());
+      distanceTravelled = int(t[1]);
+      referenceSpeed= int(s[1].trim());
     }
   }
 }
