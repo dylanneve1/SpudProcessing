@@ -14,6 +14,7 @@ int distanceTravelled = 0;
 int obstacleDistance = 0;
 float sspeed=0.0;
 int manualspeed=0;
+int error= 0;
 
 float currentSpeed = 0.0;
 float referenceSpeed = 0.0;
@@ -30,7 +31,7 @@ void setup() {
   size(1500, 750);
   background(#B8E6FA);
   cp5 = new ControlP5(this);
-   //setupClient();
+  setupClient();
 
   // Start/Stop Button
   startStopToggle = cp5.addToggle("")
@@ -74,7 +75,7 @@ void controlEvent(ControlEvent theEvent) {
     send = startStopToggle.getValue() == 1 ? "1" : "0";
     int stringSpeed = (int) sspeed;
     String sentence = answers(send, stringSpeed);
-    //myClient.write(sentence);
+    myClient.write(sentence);
     println(sentence);
     if (send == "1")
       startStopToggle.setLabel("Start");
@@ -96,7 +97,7 @@ void controlEvent(ControlEvent theEvent) {
     send = startStopToggle.getValue() == 1 ? "1" : "0";
     int stringSpeed = (int) sspeed;
     String sentence = answers(send, stringSpeed);
-    // myClient.write(sentence);
+    myClient.write(sentence);
     println(sentence);
   }
 
@@ -112,7 +113,7 @@ void controlEvent(ControlEvent theEvent) {
     send = startStopToggle.getValue() == 1 ? "1" : "0";
     int stringSpeed = (int) sspeed;
     String sentence = answers(send, stringSpeed);
-  //  myClient.write(sentence);
+    myClient.write(sentence);
     println(sentence);
   }
 }
@@ -136,7 +137,7 @@ void setupClient() {
 
 void draw() {
   background(#B8E6FA);
-  //updateSensorData();
+  updateSensorData();
   //String stringSpeed = Float.toString(sspeed);
   //String sentence= answers(send, stringSpeed);
   //println(sentence);
@@ -188,8 +189,9 @@ void draw() {
   textSize(32);
   currentSpeed= speedslider.getValue();
   text("CURRENT SPEED (in cm/s): " +  (int)currentSpeed, 350, height/2+ 220);
-  text("CURRENT REFERENCE SPEED:  " + (int)referenceSpeed, width- 350, height/2+200);
-  text("DISTANCE OF OBJECT: "+ obstacleDistance + " cm", width-350, height/2+240);
+  text("CURRENT REFERENCE SPEED:  " + (int)referenceSpeed, width- 350, height/2+180);
+  text("DISTANCE OF OBJECT: "+ obstacleDistance + " cm", width-350, height/2+220);
+  text("PID ERROR: " + error, width-350, height/2+260);
 
   textSize(20);
   text("MIN", 60, height/2 +170);
@@ -205,7 +207,7 @@ void draw() {
 
 void lockManualControls(boolean lock) {
   speedslider.setLock(lock);
- // confirm.setLock(lock);
+  // confirm.setLock(lock);
   sspeed= 0.0;
 }
 
@@ -213,17 +215,19 @@ void updateSensorData() {
   if (myClient.available() > 0) {
     String data = myClient.readString();
     String[] values = data.split(",");
-    if (values.length >= 5) {
+    if (values.length >= 6) {
       String[] ls = values[0].split(":");
       String[] rs = values[1].split(":");
       String[] d = values[2].split(":");
       String[] t = values[3].split(":");
       String [] s = values[4].split(":");
+      String[] e= values[5].split(":");
       leftMotorSpeed = int(ls[1]);
       rightMotorSpeed = int(rs[1]);
       obstacleDistance = int(d[1]);
       distanceTravelled = int(t[1]);
-      referenceSpeed= int(s[1].trim());
+      referenceSpeed= int(s[1]);
+      error= int(e[1].trim());
     }
   }
 }
