@@ -31,7 +31,7 @@ void setup() {
   size(1500, 750);
   background(#B8E6FA);
   cp5 = new ControlP5(this);
-  setupClient();
+  //setupClient();
 
   // Start/Stop Button
   startStopToggle = cp5.addToggle("")
@@ -75,7 +75,7 @@ void controlEvent(ControlEvent theEvent) {
     send = startStopToggle.getValue() == 1 ? "1" : "0";
     int stringSpeed = (int) sspeed;
     String sentence = answers(send, stringSpeed);
-    myClient.write(sentence);
+    //myClient.write(sentence);
     println(sentence);
     if (send == "1")
       startStopToggle.setLabel("Start");
@@ -97,7 +97,7 @@ void controlEvent(ControlEvent theEvent) {
     send = startStopToggle.getValue() == 1 ? "1" : "0";
     int stringSpeed = (int) sspeed;
     String sentence = answers(send, stringSpeed);
-    myClient.write(sentence);
+   // myClient.write(sentence);
     println(sentence);
   }
 
@@ -113,7 +113,7 @@ void controlEvent(ControlEvent theEvent) {
     send = startStopToggle.getValue() == 1 ? "1" : "0";
     int stringSpeed = (int) sspeed;
     String sentence = answers(send, stringSpeed);
-    myClient.write(sentence);
+    //myClient.write(sentence);
     println(sentence);
   }
 }
@@ -137,7 +137,7 @@ void setupClient() {
 
 void draw() {
   background(#B8E6FA);
-  updateSensorData();
+ // updateSensorData();
   //String stringSpeed = Float.toString(sspeed);
   //String sentence= answers(send, stringSpeed);
   //println(sentence);
@@ -234,7 +234,7 @@ void updateSensorData() {
 
 String answers(String send, int sspeed)
 {
-  String sentence= "B:" + send + ",M:"+ mode + ",S:" + sspeed ;
+  String sentence= "B:" + send + ",M:"+ 4 + ",S:" + sspeed ;
   return sentence;
 }
 
