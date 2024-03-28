@@ -5,7 +5,6 @@ ControlP5 cp5;
 Toggle startStopToggle;
 Slider speedslider;
 Client myClient;
-Button Switch;
 Button confirm;
 
 int leftMotorSpeed = 0;
@@ -23,7 +22,6 @@ int arduino_port = 5200;
 String arduino_ip = "192.168.4.1";
 String send = "0";  // Initial value
 String check= "0";
-String mode= "0";
 
 boolean manualControl = true;
 
@@ -60,14 +58,6 @@ void setup() {
     .setColorBackground(color(0, 255, 0))
     .setValue(0);
 
-
-  // Switch Button
-  Switch= cp5.addButton("SwitchButton")
-    .setPosition(width/2-75, height / 2 + 150)
-    .setSize(150, 80)
-    .setLabel("Switch Mode")
-    .setColorBackground(color(0, 0, 255))
-    .setValue(0);
 }
 
 void controlEvent(ControlEvent theEvent) {
@@ -83,23 +73,7 @@ void controlEvent(ControlEvent theEvent) {
       startStopToggle.setLabel("Stop");
   }
 
-  //if (send=="1"){
-  if (theEvent.isFrom(Switch)) {
-    if (mode.equals("0")) {
-      mode = "4"; // Switch to reference mode
-      lockManualControls(true);// Lock manual controls
-      manualspeed= (int)sspeed;
-    } else {
-      mode = "0"; // Switch to manual mode
-      lockManualControls(false);
-      sspeed= manualspeed;// Unlock manual controls
-    }
-    send = startStopToggle.getValue() == 1 ? "1" : "0";
-    int stringSpeed = (int) sspeed;
-    String sentence = answers(send, stringSpeed);
-   // myClient.write(sentence);
-    println(sentence);
-  }
+  //if (send=="1")
 
 
   if (theEvent.isFrom(speedslider)) {
@@ -117,16 +91,6 @@ void controlEvent(ControlEvent theEvent) {
     println(sentence);
   }
 }
-// }
-//else
-//{
-//  send = startStopToggle.getValue() == 1 ? "1" : "0";
-//  String stringSpeed = "0.0";
-//  String sentence = answers(send, stringSpeed);
-//  println(sentence);
-//}
-
-
 
 
 
@@ -234,7 +198,7 @@ void updateSensorData() {
 
 String answers(String send, int sspeed)
 {
-  String sentence= "B:" + send + ",M:"+ 4 + ",S:" + sspeed ;
+  String sentence= "B:" + send + ",S:" + sspeed ;
   return sentence;
 }
 
